@@ -1,0 +1,51 @@
+# Skattkistan är en lösenordshanterare skapt för att underlätta lösenordsgeneration samt hantering för användare av alla slag.
+# Programmet har en enkel grafisk interface där användare kan definiera längden av önskat lösenord, generera detta med ett knapptryck och
+# sedan hantera dessa genererade lösenord genom att visa, kopiera eller ta bort existerande lösenord.
+
+from tkinter import *  # Tkinter för att skapa GUI:n
+from tkinter import ttk
+import string # För att enkelt kunna definiera ett objekt som innehåller A-Z + 0-9 + all punctuation.
+import secrets # Bättre variant av "random" som generar mer kryptografiskt säkra lösenord
+
+root = Tk()                 # Skapa ett tkinter fönster som kallas "Skattkistan"
+root.title("Skattkistan")
+root.geometry("800x500")
+
+group = Frame(root, bg="#f5f5f5", bd=4, relief=RAISED)          # Frame 1 som ska inkludera längd-definitionen samt
+group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)     # lösen-generationswidgeten. 
+
+txt_label = Label(group, text = "Längd: ")   # Definierar att det efterfrågas "Längd" vid input-fältet
+txt_label.place(relx=0.35, rely=0.28, relwidth=0.3)
+
+def save_length(*args):         # Funktion för att spara längden som användaren definierar
+    value = length.get()
+    return value
+
+length = StringVar()
+length.trace_add("write", save_length)      # Varje gång entryfältet "längd" skrivs till så kalla på funktionen
+txt = Entry(group, textvariable=length)      # "save_length" för att spara ned det senaste värdet.
+txt.place(relx=0.35, rely=0.35, relwidth=0.3)
+
+
+
+def passgen():
+        length = int(save_length())
+        chars = string.ascii_letters + string.digits + string.punctuation # Alla karaktärer som vanligtvis är tillåtna i lösenord
+        password = "".join(secrets.choice(chars) for i in range(length)) # Ta ett slumpat urval från "chars" "length" antal gånger
+        pwd_label = Label(group2, text = password)      # Lägg till lösenordet i GUI:n
+        pwd_label.pack()
+
+buttongen = ttk.Button(group, text="Generera ett lösenord", command=passgen) # Knapp för att generera lösenord
+buttongen.place(relx=0.30, rely=0.43, relwidth=0.4)
+
+separate = ttk.Separator(root, orient="vertical")           # Visuell separator för att skilja på frame 1 och 2
+separate.place(relx=0.47, rely=0, relwidth=0.2, relheight=1)
+
+group2 = Frame(root, bg="#f5f5f5", bd=4, relief=SUNKEN)     # Frame två där skapade lösenord ska sparas
+group2.place(relx=0.51, rely=0.1, relheight=0.8, relwidth=0.4)
+
+
+
+root.mainloop()
+
+
