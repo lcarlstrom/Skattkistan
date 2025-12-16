@@ -44,20 +44,31 @@ def passgen():
             pwd_label.grid(column=0, row=rowcount)
             pwd_labels = []                       # Skapa en lista av alla lösenords widgets
             pwd_labels.append(pwd_label)
+            
             def toggle_password():                  # Funktion för att visa lösenordet när användaren klickar på "?"
-                for pwd_lab in pwd_labels:        # För varje individuell widget i listan av widgets  
-                    if pwd_lab.cget("text").startswith("*"):    # Om texten i widgeten börjar med asterisker
-                        pwd_lab.config(text=password) # Gör om asteriskerna till det faktiska lösenordet
+                for pwd_label in pwd_labels:        # För varje individuell widget i listan av widgets  
+                    if pwd_label.cget("text").startswith("*"):    # Om texten i widgeten börjar med asterisker
+                        pwd_label.config(text=password) # Gör om asteriskerna till det faktiska lösenordet
                     else:                             # Men om det inte är asterisker  
-                        pwd_lab.config(text=len(password) * "*")    # Gör om det till asterisker
+                        pwd_label.config(text=len(password) * "*")    # Gör om det till asterisker
             showbutton = ttk.Button(group2, text="?", command=toggle_password) # Knapp för att visa lösenordet
             showbutton.grid(column=1, row = rowcount)
+            
             def copy_password():                            # För varje individuell label, kopiera specifikt det lösenordet
-                 for pwd_lab in pwd_labels:
+                 for pwd_label in pwd_labels:
                     root.clipboard_clear()
                     root.clipboard_append(password)
-            showbutton = ttk.Button(group2, text="C", command=copy_password) # Knapp för att kopiera lösenordet
-            showbutton.grid(column=2, row= rowcount)
+            copybutton = ttk.Button(group2, text="C", command=copy_password) # Knapp för att kopiera lösenordet
+            copybutton.grid(column=2, row= rowcount)
+
+            def remove_password():                          # För varje individuell label, ta bort lösenordet och alla knappar
+                 for pwd_label in pwd_labels:
+                      pwd_label.destroy()
+                      showbutton.destroy()
+                      copybutton.destroy()
+                      deletebutton.destroy()
+            deletebutton = ttk.Button(group2, text="-", command=remove_password) # Knapp för att ta bort lösenordet
+            deletebutton.grid(column=3, row= rowcount)
 
             rowcount += 1
             return password

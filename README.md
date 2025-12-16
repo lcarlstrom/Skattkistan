@@ -4,4 +4,4 @@ Programmet har en enkel grafisk interface där användare kan definiera längden
 Skattkistan körs genom att starta skriptet varpå användaren får ta del av ett grafiskt interface med en input-låda och en generations-knapp.
 I input-lådan bör ett integer värde matas in baserat på önskad lösenordslängd.
 Efter input har fyllts klickar användaren på generations-knappen och får lösenord i den högre spalten.
-Dessa lösenord syns initialt som asterisker med knappar vid sidan om för att visa/dölja lösenordet samt kopiera lösenordet.
+Dessa lösenord syns initialt som asterisker med knappar vid sidan om för att visa/dölja, kopiera och ta bort lösenord.
