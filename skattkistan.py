@@ -58,6 +58,7 @@ def passgen():
                     root.clipboard_append(password)
             showbutton = ttk.Button(group2, text="C", command=copy_password) # Knapp för att kopiera lösenordet
             showbutton.grid(column=2, row= rowcount)
+
             rowcount += 1
             return password
         except ValueError:                  # Fånga när length blir matad med non-integer värden, int(save_length()) av en string blir ValueError
@@ -70,13 +71,6 @@ def passgen():
 
 buttongen = ttk.Button(group, text="Generera ett lösenord", command=passgen) # Knapp för att generera lösenord
 buttongen.place(relx=0.30, rely=0.43, relwidth=0.4)
-
-
-# Lägg till knapp för att kopiera lösenordet
-
-# Lägg till knapp för att ta bort lösenordet
-
-
 
 root.mainloop()
 
