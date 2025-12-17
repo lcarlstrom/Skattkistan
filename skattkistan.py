@@ -59,7 +59,7 @@ root.geometry("800x500")
 
 group = Frame(root, bg="#f5f5f5", bd=4, relief=RAISED)            # Frame 1 som ska inkludera längd-definitionen samt
 group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)       # lösen-generationswidgeten. 
-version = Label(group, text="version 1.9", bg="#f5f5f5")
+version = Label(group, text="version 1.91", bg="#f5f5f5")
 version.place(relx=0.01, rely=0.01, relwidth=0.2)
 
 helpwindow = None                                                   # Hjälpfönstret finns inte förens det skapas
@@ -71,9 +71,9 @@ def showhelp():
         helpwindow.transient(root)                                  # Gör fönstret ett barn av huvudfönstret                        
         helpwindow.title("Guide")
         helpwindow.geometry("600x175+150+150")
-        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.9 
-        Correct use: input whole number(s) into the entry-field 
-        titled "length" and press generate.
+        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.91 
+        Correct use: input a whole number above 0 and below 50 
+        into the entry-field titled "length" and press generate.
         Passwords will now generate into the right field.
         These are viewable, copyable and removeable.
         To view a password press "?" 
