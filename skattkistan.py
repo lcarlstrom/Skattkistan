@@ -6,6 +6,18 @@ from tkinter import *                                               # Tkinter f�
 from tkinter import ttk
 import string                                                       # För att enkelt kunna definiera ett objekt som innehåller A-Z + 0-9 + all punctuation.
 import secrets                                                      # Bättre variant av "random" som generar mer kryptografiskt säkra lösenord
+from datetime import datetime
+
+Eventerrorlist = []
+
+
+try:
+    with open("log.txt", "r") as file:
+        for line in file.readlines():
+            line = line.strip()
+            Eventerrorlist.append(line)
+except:
+    open("log.txt", "x")
 
 root = Tk()                                                         # Skapa ett tkinter fönster som kallas "Skattkistan"
 root.title("Skattkistan")
@@ -13,7 +25,7 @@ root.geometry("800x500")
 
 group = Frame(root, bg="#f5f5f5", bd=4, relief=RAISED)            # Frame 1 som ska inkludera längd-definitionen samt
 group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)       # lösen-generationswidgeten. 
-version = Label(group, text="version 1.62", bg="#f5f5f5")
+version = Label(group, text="version 1.7", bg="#f5f5f5")
 version.place(relx=0.01, rely=0.01, relwidth=0.2)
 
 helpwindow = None                                                   # Hjälpfönstret finns inte förens det skapas
@@ -26,7 +38,7 @@ def showhelp():
         helpwindow.grab_set()                                       # Tvinga input innan det går att interagera med andra fönster
         helpwindow.title("Guide")
         helpwindow.geometry("600x175+150+150")
-        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.62 
+        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.7 
         Correct use: input whole number(s) into the entry-field 
         titled "length" and press generate.
         Passwords will now generate into the right field.
@@ -35,6 +47,7 @@ def showhelp():
         To copy a password press "c" 
         To remove a password press "-" """)
         helpmsg.place(relx=0.2, rely=0.1, relheight=0.8, relwidth=0.6)
+    Eventerrorlist.append(str(datetime.now()) + " Event" + " showhelp")
 
 helpbutton = ttk.Button(group, text="Help", command=showhelp)
 helpbutton.place(relx=0.40, rely=0.50, relwidth=0.2)
@@ -73,44 +86,77 @@ txt.place(relx=0.35, rely=0.35, relwidth=0.3)
 rowcount = 0                                                        # Adderas med 1 efter varje lösenordsgeneration för att lösenorden ska ordnas efter varandra i GUI:n
 errorwindow = None                                                  # Errorfönstret finns inte innan det skapas.
 
+# Lägg till fil-inläsning av sparade lösenord, logiken borde kolla om filen finns och isåfall läsa av den
+# och på något sätt spara varje linje (ett lösenord per linje) till pwd_labels inuti passgen() på något sätt.
+# Stor risk att logiken för passgen behöver skrivas om för att uppnå detta
+
+savedpasswords = []
+newpasswords = []
+
+try:                                                                # Testa att öppna filen för inläsning av lösenord
+    with open("password.txt", "r") as file:
+        for line in file.readlines():
+            line = line.strip()
+            savedpasswords.append(line)
+
+except:                                                             # Om filen inte finns så skapa den
+    file = open("password.txt", "w")
+
 def passgen():
         try:
             global rowcount
-            length = int(save_length())
-            if length > 0:
-                 length = length                                                        # Tillåt längden att bli det användardefinierade
-            else:
-                 length = "Invalid"                                                     # Gör längden till en str om den är 0 eller mindre för att raise TypeError vid password variabel
-                                                                                        # fångar sedan detta för att printa ut unikt "Input length greater than 0" error msg till användaren
-            chars = string.ascii_letters + string.digits + string.punctuation           # Alla karaktärer som vanligtvis är tillåtna i lösenord
-            password = "".join(secrets.choice(chars) for i in range(length))            # Ta ett slumpat urval från "chars" "length" antal gånger
-            pwd_label = Label(group2, text = len(password) * "*", bg="#f5f5f5")                       # Lägg till lösenordet i GUI:n i asterisk-format
+            if savedpasswords:                                                              # Om listan av lösenord inte är tom
+                password = savedpasswords.pop(0)                                            # Sätt lösenordet till första elementet i listan och sen ta bort elementet
+            else:    
+                length = int(save_length())
+                if length > 0:
+                    length = length                                                         # Tillåt längden att bli det användardefinierade
+                else:
+                    length = "Invalid"                                                      # Gör längden till en str om den är 0 eller mindre för att raise TypeError vid password variabel
+                                                                                            # fångar sedan detta för att printa ut unikt "Input length greater than 0" error msg till användaren
+                chars = string.ascii_letters + string.digits + string.punctuation           # Alla karaktärer som vanligtvis är tillåtna i lösenord
+                password = "".join(secrets.choice(chars) for i in range(length))            # Ta ett slumpat urval från "chars" "length" antal gånger
+                newpasswords.append(password)
+                with open("password.txt", "a") as file:
+                    file.write("\n" + password)
+            pwd_label = Label(group2, text = len(password) * "*", bg="#f5f5f5")           # Lägg till lösenordet i GUI:n i asterisk-format
             pwd_label.grid(column=0, row=rowcount)
             pwd_labels = []                                                             # Skapa en lista av alla lösenord widgets
             pwd_labels.append(pwd_label)
-            
+            Eventerrorlist.append(str(datetime.now()) + " Event" + " passgen")
             def toggle_password():                                                      # Funktion för att visa lösenordet när användaren klickar på "?"
                 for pwd_label in pwd_labels:                                            # För varje individuell widget i listan av widgets  
                     if pwd_label.cget("text") == len(password) * "*":                   # Om lösenordet nu visas som asterisker
                         pwd_label.config(text=password)                                 # Gör om asteriskerna till det faktiska lösenordet
                     else:                                                               # Men om det inte är asterisker  
                         pwd_label.config(text=len(password) * "*")                      # Gör om det till asterisker
+                Eventerrorlist.append(str(datetime.now()) + " Event" + " toggle_password")
             showbutton = ttk.Button(group2, text="?", command=toggle_password)          # Knapp för att visa lösenordet
             showbutton.grid(column=1, row = rowcount)
             
             def copy_password():                                                        # För varje individuell label, kopiera specifikt det lösenordet
-                 for pwd_label in pwd_labels:
+                for pwd_label in pwd_labels:
                     root.clipboard_clear()
                     root.clipboard_append(password)
+                Eventerrorlist.append(str(datetime.now()) + " Event" + " copy_password")
+
             copybutton = ttk.Button(group2, text="C", command=copy_password)            # Knapp för att kopiera lösenordet
             copybutton.grid(column=2, row= rowcount)
 
             def remove_password():                                                      # För varje individuell label, ta bort lösenordet och alla knappar
-                 for pwd_label in pwd_labels:
-                      pwd_label.destroy()
-                      showbutton.destroy()
-                      copybutton.destroy()
-                      deletebutton.destroy()
+                for pwd_label in pwd_labels:
+                    pwd_label.destroy()
+                    showbutton.destroy()
+                    copybutton.destroy()
+                    deletebutton.destroy()
+                    with open("password.txt", "r+") as file:
+                        passwords = file.readlines()
+                        file.seek(0)
+                        for pword in passwords:
+                            if pword.strip() != password:
+                                file.write(pword)
+                                file.truncate()
+                Eventerrorlist.append(str(datetime.now()) + " Event" + " remove_password")
 
             deletebutton = ttk.Button(group2, text="-", command=remove_password)        # Knapp för att ta bort lösenordet
             deletebutton.grid(column=3, row= rowcount)
@@ -127,15 +173,30 @@ def passgen():
                     errorwindow.geometry("250x30+300+250")
                     if type(error) == ValueError:                                       # Om input är ett non-integer värde                                       
                         errormsg = Label(errorwindow, text = "Please only input an integer value")
+                        Eventerrorlist.append(str(datetime.now()) + " Error" + " ValueError")
                     elif type(error) == TypeError:                                      # Om input är 0
                         errormsg = Label(errorwindow, text = "Please input a length greater than 0")
+                        Eventerrorlist.append(str(datetime.now()) + " Error" + " TypeError")
                     errormsg.pack(anchor=CENTER)
    
+while savedpasswords:                                                                   # Om listan av sparade lösenord inte är tom
+    passgen()                                                                           # kalla funktionen passgen()
 
 buttongen = ttk.Button(group, text="Generate password", command=passgen)                # Knapp för att generera lösenord
 buttongen.place(relx=0.30, rely=0.43, relwidth=0.4)
 
-
 root.mainloop()
+
+Eventerrorlist.sort()
+
+with open("log.txt", "w") as file:
+    for evnt in Eventerrorlist:
+        file.write(evnt + "\n")
+
+
+
+# Skriv ut Eventlist & Errorlist till en logg.txt fil, ordnade efter datum så att ett Event kan vara följt av ett Error
+# Hasha och skriv ut alla lösenord till en fil
+
 
 
