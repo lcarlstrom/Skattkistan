@@ -36,7 +36,7 @@ root.geometry("800x500")
 
 group = Frame(root, bg="#f5f5f5", bd=4, relief=RAISED)            # Frame 1 som ska inkludera längd-definitionen samt
 group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)       # lösen-generationswidgeten. 
-version = Label(group, text="version 1.8", bg="#f5f5f5")
+version = Label(group, text="version 1.81", bg="#f5f5f5")
 version.place(relx=0.01, rely=0.01, relwidth=0.2)
 
 helpwindow = None                                                   # Hjälpfönstret finns inte förens det skapas
@@ -46,10 +46,9 @@ def showhelp():
     if helpwindow is None or not helpwindow.winfo_exists():         # Om hjälpfönstret inte finns
         helpwindow = Toplevel()                                     # skapa hjälpfönstret.
         helpwindow.transient(root)                                  # Gör fönstret ett barn av huvudfönstret                        
-        helpwindow.grab_set()                                       # Tvinga input innan det går att interagera med andra fönster
         helpwindow.title("Guide")
         helpwindow.geometry("600x175+150+150")
-        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.8 
+        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.81 
         Correct use: input whole number(s) into the entry-field 
         titled "length" and press generate.
         Passwords will now generate into the right field.
@@ -123,7 +122,7 @@ def passgen():
                 encrypted = encryptedpass.pop(0)
             else:    
                 length = int(save_length())
-                if length > 0:
+                if 0 < length < 50:
                     length = length                                                         # Tillåt längden att bli det användardefinierade
                 else:
                     length = "Invalid"                                                      # Gör längden till en str om den är 0 eller mindre för att raise TypeError vid password variabel
@@ -185,14 +184,13 @@ def passgen():
                 if errorwindow is None or not errorwindow.winfo_exists():               # Se till att errorfönstret inte redan finns
                     errorwindow = Toplevel()
                     errorwindow.transient(root)                                         # Gör fönstret ett barn av root fönstret
-                    errorwindow.grab_set()                                              # Tvinga input innan interaktion med andra fönster
                     errorwindow.title("Error")
-                    errorwindow.geometry("250x30+300+250")
+                    errorwindow.geometry("350x30+300+250")
                     if type(error) == ValueError:                                       # Om input är ett non-integer värde                                       
                         errormsg = Label(errorwindow, text = "Please only input an integer value")
                         Eventerrorlist.append(str(datetime.now()) + " Error" + " ValueError")
                     elif type(error) == TypeError:                                      # Om input är 0
-                        errormsg = Label(errorwindow, text = "Please input a length greater than 0")
+                        errormsg = Label(errorwindow, text = "Please input a length greater than 0 and less than 50")
                         Eventerrorlist.append(str(datetime.now()) + " Error" + " TypeError")
                     errormsg.pack(anchor=CENTER)
    
