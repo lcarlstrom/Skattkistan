@@ -63,7 +63,7 @@ root.geometry("900x500")
 group = Frame(root, bg="#f5f5f5", bd=4, relief=RAISED)              # Frame 1 som ska inkludera längd-definitionen samt
 group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)       # lösen-generationswidgeten. 
 
-version = Label(group, text="version 1.92", bg="#f5f5f5")
+version = Label(group, text="version 1.93", bg="#f5f5f5")
 version.place(relx=0.01, rely=0.01, relwidth=0.2)
 
 separate = ttk.Separator(root, orient="vertical")                   # Visuell separator för att skilja på frame 1 och 2
@@ -89,7 +89,7 @@ def showhelp():
         helpwindow.transient(root)                                  # Gör fönstret ett barn av huvudfönstret                        
         helpwindow.title("Guide")
         helpwindow.geometry("600x175+150+150")
-        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.92 
+        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.93 
         Correct use: input a whole number above 0 and below 50 
         into the entry-field titled "length" and press generate.
         Passwords will now generate into the right field.
@@ -122,12 +122,14 @@ def mwheelscroll(event):                                            # Ser till a
         if top > 0.0 or bottom < 1.0:                               # Tillåt bara scrollning när listan är överfull
             if event.num == 4:                                      # Linux scroll-up
                 canvas.yview_scroll(-1, "units")
-            if event.num == 5:                                      # Linux scroll-down
+            elif event.num == 5:                                    # Linux scroll-down
                 canvas.yview_scroll(1, "units")
             else:                                                   # Windows 
-                canvas.yview_scroll(int(-1*((event.delta/120) * 2)), "units")
+                canvas.yview_scroll(int(-1*(event.delta/120)), "units")
 
-root.bind("<MouseWheel>", mwheelscroll)
+root.bind("<MouseWheel>", mwheelscroll)                             # Windows scrollwheel
+root.bind("<Button-4>", mwheelscroll)                               # Linux scroll-up
+root.bind("<Button-5>", mwheelscroll)                               # Linux scroll-down
 
 # Längd entry box
 
@@ -162,12 +164,16 @@ try:                                                                # Testa att 
 except (FileNotFoundError, InvalidToken) as error:
     if type(error) == FileNotFoundError:                                                    # Om filen inte finns så skapa den
         file = open("password.txt", "wb")
+        Eventerrorlist.append(str(datetime.now()) + " Error" + " FileNotFoundError")
     elif type(error) == InvalidToken:                                                       # Om lösenordet är fel (Fernet raisar "InvalidToken" när den försöker avkryptera med en inkorrekt nyckel, d.v.s en nyckel som skapades med fel lösenord)
         root.withdraw()                                                                     # skapa en messagebox som säger "Invalid master password"
         messagebox.showerror("Error", "Invalid master password")
         root.destroy()
-        exit(1)
         Eventerrorlist.append(str(datetime.now()) + " Error" + " InvalidToken")
+        with open("log.txt", "a") as file:
+            for evnt in Eventerrorlist:
+                file.write(evnt + "\n")
+        exit(1)
 
 def passgen(*args):
         try:
@@ -213,12 +219,12 @@ def passgen(*args):
             copybutton = ttk.Button(group2, text="C", command=copy_password)                # Knapp för att kopiera lösenordet
             copybutton.grid(column=2, row= rowcount)
 
-            def remove_password(encrypted):                                                 # För varje individuell label, ta bort lösenordet och alla knappar
-                for pwd_label in pwd_labels:
-                    pwd_label.destroy()
-                    showbutton.destroy()
-                    copybutton.destroy()
-                    deletebutton.destroy()
+            def remove_password(encrypted):                                                 # Ta bört lösenordet
+                pwd_label.destroy()
+                showbutton.destroy()
+                copybutton.destroy()
+                deletebutton.destroy()
+                canvas.update_idletasks()                                                   # Rita om GUI:n när lösenordet har tagits bort.
 
                 with open("password.txt", "rb") as file:
                     passwords = file.readlines()
@@ -230,7 +236,7 @@ def passgen(*args):
 
                 Eventerrorlist.append(str(datetime.now()) + " Event" + " remove_password")
 
-            deletebutton = ttk.Button(group2, text="-", command=lambda enc = encrypted: remove_password(enc))        # Knapp för att ta bort lösenordet
+            deletebutton = ttk.Button(group2, text="-", command=lambda encrypted = encrypted: remove_password(encrypted))        # Knapp för att ta bort lösenordet - sätter en lokal lambda variable "encrypted" som fångar värdet av encrypted vid line 193
             deletebutton.grid(column=3, row= rowcount)
 
             rowcount += 1
