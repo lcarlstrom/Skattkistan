@@ -65,25 +65,25 @@ except:
 
 root = Tk()                                                         # Skapa ett tkinter fönster som kallas "Skattkistan"
 root.title("Skattkistan")
-root.geometry("900x500")
+root.geometry("950x500")
 
-group = Frame(root, bd=4, relief=RAISED)              # Frame 1 som ska inkludera längd-definitionen samt
+group = Frame(root, bd=4, relief=RAISED)                            # Frame 1 som ska inkludera längd-definitionen samt
 group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)       # lösen-generationswidgeten. 
 
-version = Label(group, text="version 1.95")
+version = Label(group, text="version 1.96")
 version.place(relx=0.01, rely=0.01, relwidth=0.2)
 
 separate = ttk.Separator(root, orient="vertical")                   # Visuell separator för att skilja på frame 1 och 2
 separate.place(relx=0.47, rely=0, relheight=1)
 
-canvas = Canvas(root, bd=4, relief=SUNKEN)            # Skapar en canvas där min frame finns och alla mina widgets, en canvas skapas här för att sedan inkludera en scrollbar. Går inte att sätta en scrollbar på en frame.
-canvas.place(relx=0.51, rely=0.1, relheight=0.8, relwidth=0.4)
+canvas_frame = Frame(root, bd=4, relief=SUNKEN)                     # För att få en snygg border på min canvas. Definieras här för att sätta ovanpå canvas. Vid border på en canvas kan dess barn överlappa bordern på grund av tkinters implementation. Detta undviker det problemet.
+canvas_frame.place(relx=0.51, rely=0.1, relheight=0.8, relwidth=0.4)
 
-group2 = Frame(canvas)                                # Frame två där skapade lösenord ska sparas
+canvas = Canvas(canvas_frame, bd=0)                                 # En canvas behövs för att implementera en scrollbar för att skrolla igenom t.ex. en stor mängd lösenord
+canvas.pack(fill=BOTH, expand=TRUE)
+
+group2 = Frame(canvas)                                              # Frame två där skapade lösenord ska sparas
 window1 = canvas.create_window((10, 10), window=group2, anchor=NW)  
-
-def windowsize(event):                                              # Resize fönstret så att frame "group2" endast ligger inuti canvas
-    canvas.itemconfig(window1, width=canvas.winfo_width() - 20, height=canvas.winfo_height() - 20)
 
 # Manual/Hjälpfönster
 
@@ -96,7 +96,7 @@ def showhelp():
         helpwindow.transient(root)                                  # Gör fönstret ett barn av huvudfönstret                        
         helpwindow.title("Guide")
         helpwindow.geometry("600x175+150+150")
-        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.95 
+        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.96 
         Correct use: input a whole number above 0 and below 50 
         into the entry-field titled "length" and press generate.
         Passwords will now generate into the right field.
@@ -140,7 +140,7 @@ root.bind("<Button-5>", mwheelscroll)                               # Linux scro
 
 # Längd entry box
 
-txt_label = Label(group, text = "Length: ")           # Definierar att det efterfrågas "Längd" vid input-fältet
+txt_label = Label(group, text = "Length: ")                         # Definierar att det efterfrågas "Längd" vid input-fältet
 txt_label.place(relx=0.35, rely=0.28, relwidth=0.3)
 
 def save_length(*args):                                             # Funktion för att spara längden som användaren definierar
@@ -200,7 +200,7 @@ def passgen(*args):
                 encrypted = cipher.encrypt(password.encode())
                 with open("password.txt", "ab") as file:
                     file.write(encrypted + b"\n")
-            pwd_label = Label(group2, text = len(password) * "*")             # Lägg till lösenordet i GUI:n i asterisk-format
+            pwd_label = Label(group2, text = len(password) * "*")                           # Lägg till lösenordet i GUI:n i asterisk-format
             pwd_label.grid(column=0, row=rowcount)
             pwd_labels = []                                                                 # Skapa en lista av alla lösenord widgets
             pwd_labels.append(pwd_label)
