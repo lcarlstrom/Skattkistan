@@ -16,6 +16,7 @@ import os
 import sys
 import sv_ttk
 import darkdetect
+import json
 
 
 if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):      # Om skriptet körs som en executable
@@ -70,7 +71,7 @@ root.geometry("950x500")
 group = Frame(root, bd=4, relief=RAISED)                            # Frame 1 som ska inkludera längd-definitionen samt
 group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)       # lösen-generationswidgeten. 
 
-version = Label(group, text="version 1.96")
+version = Label(group, text="version 1.98")
 version.place(relx=0.01, rely=0.01, relwidth=0.2)
 
 separate = ttk.Separator(root, orient="vertical")                   # Visuell separator för att skilja på frame 1 och 2
@@ -96,7 +97,7 @@ def showhelp():
         helpwindow.transient(root)                                  # Gör fönstret ett barn av huvudfönstret                        
         helpwindow.title("Guide")
         helpwindow.geometry("600x175+150+150")
-        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.96 
+        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.98 
         Correct use: input a whole number above 0 and below 50 
         into the entry-field titled "length" and press generate.
         Passwords will now generate into the right field.
@@ -270,9 +271,28 @@ buttongen = ttk.Button(group, text="Generate password", command=passgen)        
 buttongen.place(relx=0.30, rely=0.43, relwidth=0.4)
 txt.bind("<Return>", passgen)                                                               # Tillåt att användaren klickar enter i input-fältet för generera ett lösenord.
 
-sv_ttk.set_theme(darkdetect.theme())                                                        # Sätt temat till current tema på den aktiva maskinen
+#Preferences
+try:
+    with open("preferences.txt", "r") as file:
+        prefdict = json.load(file)
+except:
+    prefdict = {}
+    with open("preferences.txt", "w") as file:
+        json.dump(prefdict, file)
 
-toggletheme = ttk.Button(group, text = "Toggle Theme", command=sv_ttk.toggle_theme)
+#Tema
+if "theme" in prefdict:                                                                     # Om det finns ett sparat tema så läs in det
+    sv_ttk.set_theme(prefdict["theme"])
+else:
+    sv_ttk.set_theme(darkdetect.theme())                                                    # Annars sätt temat till samma som användarens maskin
+
+def saveandtoggletheme():
+    sv_ttk.toggle_theme()
+    prefdict["theme"] = str(sv_ttk.get_theme())
+    with open("preferences.txt", "w") as file:
+        json.dump(prefdict, file)
+
+toggletheme = ttk.Button(group, text = "Toggle Theme", command = saveandtoggletheme)
 toggletheme.place(relx=0.01, rely=0.91, relwidth=0.32)
 
 root.mainloop()
