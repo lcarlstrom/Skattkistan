@@ -71,7 +71,7 @@ root.geometry("950x500")
 group = Frame(root, bd=4, relief=RAISED)                            # Frame 1 som ska inkludera längd-definitionen samt
 group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)       # lösen-generationswidgeten. 
 
-version = Label(group, text="version 1.98")
+version = Label(group, text="version 1.981")
 version.place(relx=0.01, rely=0.01, relwidth=0.2)
 
 separate = ttk.Separator(root, orient="vertical")                   # Visuell separator för att skilja på frame 1 och 2
@@ -80,7 +80,7 @@ separate.place(relx=0.47, rely=0, relheight=1)
 canvas_frame = Frame(root, bd=4, relief=SUNKEN)                     # För att få en snygg border på min canvas. Definieras här för att sätta ovanpå canvas. Vid border på en canvas kan dess barn överlappa bordern på grund av tkinters implementation. Detta undviker det problemet.
 canvas_frame.place(relx=0.51, rely=0.1, relheight=0.8, relwidth=0.4)
 
-canvas = Canvas(canvas_frame, bd=0)                                 # En canvas behövs för att implementera en scrollbar för att skrolla igenom t.ex. en stor mängd lösenord
+canvas = Canvas(canvas_frame, bd=0, highlightthickness=0)           # En canvas behövs för att implementera en scrollbar för att skrolla igenom t.ex. en stor mängd lösenord
 canvas.pack(fill=BOTH, expand=TRUE)
 
 group2 = Frame(canvas)                                              # Frame två där skapade lösenord ska sparas
@@ -97,7 +97,7 @@ def showhelp():
         helpwindow.transient(root)                                  # Gör fönstret ett barn av huvudfönstret                        
         helpwindow.title("Guide")
         helpwindow.geometry("600x175+150+150")
-        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.98 
+        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.981 
         Correct use: input a whole number above 0 and below 50 
         into the entry-field titled "length" and press generate.
         Passwords will now generate into the right field.
