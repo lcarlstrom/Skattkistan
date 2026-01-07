@@ -69,13 +69,16 @@ cipher = Fernet(key)
 
 root = Tk()                                                         # Skapa ett tkinter fönster som kallas "Skattkistan"
 root.title("Skattkistan")
-root.geometry("950x500")
+root.geometry("1050x500")
 
-group = Frame(root, bd=4, relief=RAISED)                            # Frame 1 som ska inkludera längd-definitionen samt
-group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)       # lösen-generationswidgeten. 
+group = Frame(root, bd=4, relief=RAISED)                            # Frame 1 innehåller längd-entry, manual, versionnummer och toggletheme.
+group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)        
 
-version = Label(group, text="version 1.99")
+version = Label(group, text="version 2.0")
 version.pack(side=TOP, anchor=W)
+
+centeredwidgets = Frame(group)
+centeredwidgets.pack(expand=True)
 
 separate = ttk.Separator(root, orient="vertical")                   # Visuell separator för att skilja på frame 1 och 2
 separate.place(relx=0.47, rely=0, relheight=1)
@@ -99,8 +102,8 @@ def showhelp():
         helpwindow = Toplevel()                                     # skapa hjälpfönstret.
         helpwindow.transient(root)                                  # Gör fönstret ett barn av huvudfönstret                        
         helpwindow.title("Guide")
-        helpwindow.geometry("600x175+150+150")
-        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.99
+        helpwindow.geometry("750x175+150+150")
+        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 2.0
         Correct use: input a whole number above 0 and below 50 
         into the entry-field titled "length" and press generate.
         Passwords will now generate into the right field.
@@ -111,8 +114,7 @@ def showhelp():
         helpmsg.place(relx=0.2, rely=0.1, relheight=0.8, relwidth=0.6)
     Eventerrorlist.append(str(datetime.now()) + " Event" + " showhelp")
 
-helpbutton = ttk.Button(group, text="Help", command=showhelp)
-helpbutton.place(relx=0.40, rely=0.50, relwidth=0.2)
+helpbutton = ttk.Button(centeredwidgets, text="Help", command=showhelp)
 
 # Scrollbar
 
@@ -146,8 +148,7 @@ root.bind("<Button-5>", mwheelscroll)                               # Linux scro
 
 # Längd entry box
 
-txt_label = Label(group, text = "Length: ")                         # Definierar att det efterfrågas "Längd" vid input-fältet
-txt_label.place(relx=0.35, rely=0.28, relwidth=0.3)
+txt_label = Label(centeredwidgets, text = "Length: ")                         # Definierar att det efterfrågas "Längd" vid input-fältet
 
 def save_length(*args):                                             # Funktion för att spara längden som användaren definierar
     value = length.get()
@@ -155,8 +156,7 @@ def save_length(*args):                                             # Funktion f
 
 length = StringVar()
 length.trace_add("write", save_length)                              # Varje gång entryfältet "längd" skrivs till så kalla på funktionen
-txt = Entry(group, textvariable=length)                             # "save_length" för att spara ned det senaste värdet.
-txt.place(relx=0.35, rely=0.35, relwidth=0.3)
+txt = Entry(centeredwidgets, textvariable=length)                             # "save_length" för att spara ned det senaste värdet.
 
 # Lösenordsgeneration och inläsning
 
@@ -272,9 +272,14 @@ def passgen(*args):
 while savedpasswords:                                                                       # Om listan av sparade lösenord inte är tom
     passgen()                                                                               # kalla funktionen passgen() som kommer mata in listan i GUI:n.
 
-buttongen = ttk.Button(group, text="Generate password", command=passgen)                    # Knapp för att generera lösenord
-buttongen.place(relx=0.30, rely=0.43, relwidth=0.4)
+
+buttongen = ttk.Button(centeredwidgets, text="Generate password", command=passgen)                    # Knapp för att generera lösenord
 txt.bind("<Return>", passgen)                                                               # Tillåt att användaren klickar enter i input-fältet för generera ett lösenord.
+
+txt_label.pack()                                                                            # Uppdaterad logik som tillsammans med centered widgets ser till att alla knappar i vänstra spalten
+txt.pack()                                                                                  # är ordentligt centrerade
+buttongen.pack()
+helpbutton.pack()
 
 #Preferences
 try:
