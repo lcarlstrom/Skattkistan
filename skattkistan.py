@@ -25,31 +25,6 @@ if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):      # Om skripte
 else:                                                               # Om skriptet körs som ett vanligt python-script
     os.chdir(os.path.dirname(os.path.abspath(__file__)))            # Sätt "working directory" till samma map som skriptet ligger i
 
-# Kryptering och nyckelkreation
-
-try:
-    with open("salt.bin", "rb") as file:                            # Öppna och läs av saltfilen
-        salt = file.read()
-except:
-    with open("salt.bin", "wb") as file:                            # Om filen inte finns, skapa den och lägg till ett slumpat salt
-        salt = os.urandom(16)
-        file.write(salt)
-
-
-def ask_masterpassword():                                           # Skapa en GUI som efterfrågar "Master Password" när funktionen kallas och returnerar detta lösenord, detta är huvudlösenordet för att komma in i applikationen
-        masterpass = simpledialog.askstring("Master Password", "Enter your master password: ", show="*")
-        if masterpass is None:                                      # Om masterpass är None (händer när man klickar på cancel) 
-            sys.exit(1)                                             # bryt funktionen
-        return masterpass.encode()    
-
-masterpass = ask_masterpassword()
-
-kdf = Scrypt(salt=salt, length=32, n=2**14, r=8, p=1)
-
-key = base64.urlsafe_b64encode(kdf.derive(masterpass))
-
-cipher = Fernet(key)
-
 # Logg-logik som behöver förekomma tidigt, varje funktion eller error som kallas eller sker ska loggas.
 
 Eventerrorlist = []
@@ -62,6 +37,34 @@ try:
 except:
     open("log.txt", "x")
 
+# Kryptering och nyckelkreation
+
+try:
+    with open("salt.bin", "rb") as file:                            # Öppna och läs av saltfilen
+        salt = file.read()
+except:
+    with open("salt.bin", "wb") as file:                            # Om filen inte finns, skapa den och lägg till ett slumpat salt
+        salt = os.urandom(16)
+        file.write(salt)
+
+def ask_masterpassword():                                           # Skapa en GUI som efterfrågar "Master Password" när funktionen kallas och returnerar detta lösenord, detta är huvudlösenordet för att komma in i applikationen
+        masterpass = simpledialog.askstring("Master Password", "Enter your master password: ", show="*")
+        if masterpass is None:                                      # Om masterpass är None (händer när man klickar på cancel) 
+            Eventerrorlist.append(str(datetime.now()) + " Event" + " masterpass_cancel")
+            with open("log.txt", "a") as file:
+                for evnt in Eventerrorlist:
+                    file.write(evnt + "\n")
+            sys.exit(1)                                             # bryt funktionen
+        return masterpass.encode()    
+
+masterpass = ask_masterpassword()
+
+kdf = Scrypt(salt=salt, length=32, n=2**14, r=8, p=1)
+
+key = base64.urlsafe_b64encode(kdf.derive(masterpass))
+
+cipher = Fernet(key)
+
 # Huvud GUI:n
 
 root = Tk()                                                         # Skapa ett tkinter fönster som kallas "Skattkistan"
@@ -71,8 +74,8 @@ root.geometry("950x500")
 group = Frame(root, bd=4, relief=RAISED)                            # Frame 1 som ska inkludera längd-definitionen samt
 group.place(relx=0.03, rely=0.1, relheight=0.8, relwidth=0.4)       # lösen-generationswidgeten. 
 
-version = Label(group, text="version 1.981")
-version.place(relx=0.01, rely=0.01, relwidth=0.2)
+version = Label(group, text="version 1.99")
+version.pack(side=TOP, anchor=W)
 
 separate = ttk.Separator(root, orient="vertical")                   # Visuell separator för att skilja på frame 1 och 2
 separate.place(relx=0.47, rely=0, relheight=1)
@@ -97,7 +100,7 @@ def showhelp():
         helpwindow.transient(root)                                  # Gör fönstret ett barn av huvudfönstret                        
         helpwindow.title("Guide")
         helpwindow.geometry("600x175+150+150")
-        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.981 
+        helpmsg = Label(helpwindow, text = """Manual for Skattkistan version 1.99
         Correct use: input a whole number above 0 and below 50 
         into the entry-field titled "length" and press generate.
         Passwords will now generate into the right field.
@@ -114,7 +117,9 @@ helpbutton.place(relx=0.40, rely=0.50, relwidth=0.2)
 # Scrollbar
 
 def on_configure(event):                                            # När något ändras uppdatera "scrollable" region   
+    canvas.update_idletasks()
     canvas.configure(scrollregion=canvas.bbox("all"))
+    
 
 scrollbar = Scrollbar(root, command=canvas.yview)                   # Skapa en scrollbar 
 scrollbar.pack(side=RIGHT, fill="y")                                # Placera scrollbaren längst till höger i GUI:n
@@ -288,12 +293,13 @@ else:
 
 def saveandtoggletheme():
     sv_ttk.toggle_theme()
+    Eventerrorlist.append(str(datetime.now()) + " Event" + " ToggleTheme")
     prefdict["theme"] = str(sv_ttk.get_theme())
     with open("preferences.txt", "w") as file:
         json.dump(prefdict, file)
 
 toggletheme = ttk.Button(group, text = "Toggle Theme", command = saveandtoggletheme)
-toggletheme.place(relx=0.01, rely=0.91, relwidth=0.32)
+toggletheme.pack(side=BOTTOM, anchor=W)
 
 root.mainloop()
 
