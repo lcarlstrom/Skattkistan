@@ -23,8 +23,5 @@ Alla händelser och felmeddelanden sparas i en loggfil.
 
 Exempel-körning av skattkistan:
 
-[![Watch the video](https://img.youtube.com/vi/NsWUJzOgVK0/0.jpg)](https://youtu.be/NsWUJzOgVK0)
-
-
-
+https://github.com/user-attachments/assets/1ddfa35f-9df5-455b-95dd-9b17c6068e3a
 
