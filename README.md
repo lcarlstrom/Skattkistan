@@ -20,3 +20,8 @@ Alla filer genererade av skriptet sparas i samma map som skriptet.
 Lösenord (inte master) sparas krypterat i password.txt.
 Masterpass salt sparas okrypterat i salt.bin.
 Alla händelser och felmeddelanden sparas i en loggfil.   
+
+Exempel-körning av skattkistan:
+
+https://www.youtube.com/watch?v=NsWUJzOgVK0
+
