@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Skattkistan är en lösenordshanterare skapt för att underlätta lösenordsgeneration samt hantering för användare av alla slag.
 # Programmet har en enkel grafisk interface där användare kan definiera längden av önskat lösenord, generera detta med ett knapptryck och
 # sedan hantera dessa genererade lösenord genom att visa, kopiera eller ta bort existerande lösenord.
@@ -317,3 +319,4 @@ with open("log.txt", "w") as file:
         file.write(evnt + "\n")
 
 #Kod kontrollerad och verifierad den 15-01-2026 av 1337andreas, ser bra ut!
+
