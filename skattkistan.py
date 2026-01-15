@@ -315,3 +315,5 @@ Eventerrorlist.sort()
 with open("log.txt", "w") as file:
     for evnt in Eventerrorlist:
         file.write(evnt + "\n")
+
+#Kod kontrollerad och verifierad den 15-01-2026 av 1337andreas, ser bra ut!
