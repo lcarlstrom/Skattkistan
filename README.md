@@ -28,6 +28,7 @@ Skriptet har aktiv support för linux och windows miljöer. Övriga miljöer är
 ```bash
 git clone https://github.com/lcarlstrom/Skattkistan
 cd Skattkistan
+pip install -r requirements.txt
 chmod +x skattkistan.py
 ./skattkistan.py
 ```
@@ -49,4 +50,5 @@ https://github.com/user-attachments/assets/1ddfa35f-9df5-455b-95dd-9b17c6068e3a
 ## Flödesschema av skriptets logik:
 
 ![My First Board - Frame 1](https://github.com/user-attachments/assets/d8dcda11-073f-43a6-adea-2302991b31e3)
+
 
